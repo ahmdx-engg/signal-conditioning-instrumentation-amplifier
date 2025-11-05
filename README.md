@@ -1,47 +1,73 @@
 # Signal Conditioning Amplifier
 
-This project presents the design, analysis, and simulation of a Signal Conditioning Amplifier implemented using analog components and simulated in Proteus. The work focuses on the development of a high-gain, low-noise amplifier circuit capable of accurately conditioning sensor output signals for subsequent data processing.
+This repository presents the design, evaluation, and optimization of a Signal Conditioning Amplifier Module developed for amplifying low-level analog signals from sensors, strain gauges, transducers, and other measurement devices.
+The project focuses on analyzing the operational characteristics of the amplifier, identifying limitations, and implementing design modifications to enhance performance, stability, and linearity.
 
-The amplifier is designed to operate as the front-end stage of a signal acquisition system, where low-level analog signals from transducers must be amplified, filtered, and stabilized before conversion to digital form. This project explores the complete design methodology of the amplifier, including biasing, gain control, bandwidth selection, and distortion minimization, ensuring optimal signal quality and measurement precision.
+The amplifier employs the AD620A Instrumentation Amplifier, a 7660 charge pump voltage converter, and an LM358 operational amplifier configured as a unity-gain buffer. The module was evaluated through simulation and measurement to verify its amplification accuracy, noise performance, and response under various conditions.
 
-## Project Motivation
+## Introduction
 
-In practical instrumentation and control systems, signals obtained from sensors and transducers are often too weak or noisy to be processed directly. Such signals may exist in the millivolt range, making them susceptible to interference and distortion. Therefore, a signal conditioning amplifier is required to boost the signal amplitude, remove unwanted noise, and prepare it for further analog-to-digital conversion or control operations.
+Signal conditioning is a critical process in analog front-end design where weak or noisy signals from sensors are amplified, filtered, or offset-adjusted before being processed by data acquisition systems.
+This project aims to design and evaluate a precision amplifier module capable of accurately amplifying small AC and DC input signals with minimal distortion and high stability.
 
-This project aims to design a precision analog amplifier that performs these conditioning functions with stability, reliability, and linearity. By developing the circuit from discrete components rather than integrated amplifier modules, the work emphasizes fundamental understanding of analog design principles — such as differential amplification, feedback stabilization, and gain-bandwidth trade-offs — which are critical for designing high-performance front-end circuits in measurement systems.
+The work emphasizes the evaluation of an existing amplifier circuit, identification of performance bottlenecks, and implementation of practical modifications to optimize gain control, power supply stability, and overall output quality.
 
-## System Overview
+## Module Overview
 
-The signal conditioning amplifier designed in this project operates as a multi-stage cascaded amplifier system. Each stage plays a distinct role in ensuring that the input signal is accurately amplified and filtered without introducing distortion or phase errors. The amplifier consists of an input differential amplifier, an intermediate gain stage, and an output buffer to drive the load with low impedance.
+The amplifier module operates within a voltage range of 3.5 V to 10 V and provides an adjustable gain between 1.5× and 1000×, controlled by a potentiometer connected to the AD620A’s gain adjustment pins.
+A 7660 voltage converter IC is used to generate the required negative voltage rail from a single positive supply, enabling the AD620A to operate symmetrically. The LM358 op amp acts as a unity-gain buffer at the output stage to provide current drive capability and isolate the amplifier from load variations.
 
-The input stage is responsible for amplifying the small differential input while rejecting common-mode noise, such as electromagnetic interference and ground noise. The intermediate stage provides the required voltage gain, which is carefully controlled by selecting appropriate resistor ratios. The output stage ensures stable operation with sufficient drive capability, minimizing distortion across the operating bandwidth.
+The overall system achieves a nominal bandwidth of approximately 120 kHz at a gain setting of 100×, ensuring stable operation for low-frequency sensor and instrumentation applications.
 
-The entire circuit was designed, simulated, and analyzed in Proteus, allowing observation of input-output waveforms, phase relationships, and frequency response characteristics. Proper component selection and biasing were emphasized to ensure high linearity and consistent performance over varying input signal levels.
+## Theory of Operation
 
-## Design Methodology
+The input voltage (VIN) supplies the circuit with power ranging between 3.5 V and 15 V. The IC 7660 generates the negative voltage rail (V−) required for dual-supply operation, while the AD620A functions as the main amplification stage.
+The amplifier’s gain is determined by the resistance connected between the AD620A’s gain control pins, which is adjustable through a 100 kΩ potentiometer.
 
-The design of the amplifier followed a systematic, step-by-step process to ensure that all performance requirements were met.
+After amplification, the signal passes to an LM358 op amp configured as a voltage follower, ensuring that the output maintains low impedance and faithfully reproduces the amplified signal without distortion or loading effects.
+This configuration provides both high input impedance and stable output performance suitable for sensor signal conditioning applications.
 
-The process began with defining the amplifier specifications, including the desired gain, bandwidth, and input signal range. A small-signal analysis was performed to determine the necessary transistor parameters and biasing resistors that would achieve linear operation within the active region. The differential amplifier stage was designed first, providing high input impedance and common-mode rejection. The tail current source was configured to set the quiescent operating point and maintain signal symmetry between the two transistors.
+## Evaluation and Limitations
 
-Once the input stage was validated, a second voltage amplifier stage was introduced to increase the overall gain to the desired level. Negative feedback was applied to stabilize gain and reduce sensitivity to component variations. This feedback mechanism also helped control the bandwidth, ensuring that the amplifier maintained a flat frequency response over the operating range.
+During the evaluation phase, it was observed that the 7660 voltage converter introduced noticeable switching noise and output ripple on the negative voltage rail.
+This electrical noise slightly degraded the amplifier’s performance, especially during high-gain operation. Additionally, the 7660 IC exhibited latch-up behavior at higher supply voltages, limiting the usable voltage range of the module.
 
-Finally, an output buffer stage was designed using an emitter follower configuration. This stage provided a low output impedance, enabling the amplifier to drive subsequent stages or loads without signal degradation. The output waveform was monitored using a virtual oscilloscope in Proteus to confirm that the amplifier delivered a clean and undistorted signal.
+The 100 kΩ potentiometer used for gain adjustment was found to provide uneven sensitivity across its range. At higher gain settings, small movements of the potentiometer resulted in large gain variations, reducing adjustment precision.
 
-Each stage was tested individually and then integrated into the final circuit. The complete amplifier was analyzed under various input conditions to verify linear operation, low distortion, and stable performance across the full range of expected input frequencies.
+Despite these limitations, the amplifier performed effectively when properly filtered and adjusted, providing clean amplification of millivolt-level input signals.
+
+## Design Improvements and Modifications
+
+To address the identified limitations, several design enhancements were implemented and tested.
+
+First, a bulk capacitor (ranging from 10 µF to 100 µF) was connected between the negative voltage output and ground. This addition significantly reduced ripple in the V− supply line, stabilizing the amplifier’s performance under dynamic load conditions.
+
+Second, the 7660 charge pump was optionally removed to allow the use of an external negative voltage supply. This modification eliminated charge-pump-induced noise and enabled the circuit to operate from cleaner dual supply rails, expanding its usable input voltage range.
+
+Third, the 100 kΩ gain potentiometer was replaced with a smaller value, such as 10 kΩ or 1 kΩ, improving linearity and control sensitivity during gain adjustments. In applications requiring fixed amplification, the potentiometer could be replaced entirely with a fixed resistor to ensure repeatable gain accuracy.
 
 ## Simulation and Analysis
 
-The amplifier was simulated in Proteus to observe its performance characteristics. Input sine wave signals of varying amplitude and frequency were applied to evaluate the gain, phase response, and distortion behavior. The results confirmed that the amplifier provided a consistent and linear voltage gain over the mid-frequency range.
+The circuit was simulated to observe its behavior with both low-frequency and high-frequency input signals.
+In the test setup, a 5 mV, 1 kHz sinusoidal input was applied to the amplifier. The output waveform captured on the oscilloscope showed a clean amplified signal with minimal noise, confirming proper operation of the differential stage and the unity buffer.
 
-The frequency response plot indicated that the amplifier maintained a flat gain across the passband, with gradual attenuation at higher frequencies due to the inherent transistor and parasitic capacitances. The use of proper biasing and feedback ensured high common-mode rejection and minimal offset drift.
+When powered through the internal 7660 converter, minor ripple artifacts appeared at the output, consistent with the charge-pump switching frequency. After adding bulk capacitance and filtering, these ripples were substantially reduced, leading to a cleaner output signal.
 
-Output waveforms showed that the amplifier reproduced the input signal faithfully, with negligible harmonic distortion and phase lag. The overall system operated with good stability, demonstrating effective signal conditioning capabilities suitable for sensor interfacing and measurement applications.
+When the 7660 was replaced by an external dual supply (for example, ±5 V or ±9 V), the amplifier demonstrated further improvement in noise suppression, higher stability, and cleaner waveform reproduction. The amplified output reached approximately 500 mV peak-to-peak for a 5 mV input, indicating a gain of around 100×, consistent with theoretical predictions for the AD620A at the given resistance configuration.
 
-## Observations
+The measured output bandwidth was consistent with the specified 120 kHz limit for a gain of 100×, with minimal phase distortion within the operating frequency range. The waveform retained its sinusoidal shape without clipping or overshoot, validating that the amplifier remained within its linear region of operation.
 
-The simulation results validated the successful operation of the signal conditioning amplifier. The circuit achieved the intended voltage gain and bandwidth while maintaining low distortion and noise levels. The differential input stage effectively rejected unwanted common-mode signals, improving the accuracy of the amplified output.
+## Scope Capture Observations
 
-The design demonstrated that through careful biasing, resistor selection, and staged amplification, it is possible to achieve precise signal conditioning using only discrete analog components. The amplifier operated efficiently across its designed frequency range, and its stability confirmed the correctness of the feedback and bias network implementation.
+Oscilloscope measurements confirmed that after implementing the proposed modifications, the amplifier produced a stable and noise-free output.
+At an input of 5 mV (1 kHz), the output amplitude reached approximately 500 mV, corresponding to an amplification factor of 100×.
 
-These observations confirm that the circuit can serve as a robust analog front-end for transducer-based systems, offering both accuracy and reliability.
+The signal displayed negligible phase shift between input and output, indicating effective buffering by the LM358 stage.
+The removal of the 7660 charge pump and the addition of a filtering capacitor provided a noticeable improvement in waveform smoothness and noise performance. The ripple that was initially visible in the negative voltage rail was significantly minimized, confirming that the improvements directly enhanced circuit stability and accuracy.
+
+## Recommendations
+
+Based on the evaluation, several recommendations can ensure reliable long-term operation and precision performance.
+It is preferable to power the amplifier using a clean external dual voltage supply rather than relying on the internal 7660 charge pump. This ensures noise-free operation and prevents voltage drop issues at higher gains.
+For consistent gain control, it is advisable to replace the high-value 100 kΩ potentiometer with a 10 kΩ potentiometer or a fixed precision resistor, depending on the intended gain requirement.
+Future designs may integrate improved voltage reference and filtering circuits to further minimize residual ripple and temperature drift.
